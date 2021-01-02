@@ -3,60 +3,65 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Newton():
-    def __init__(self, max_iter=1000):
-        # Define x as mathematical symbol
-        self.x_sym = sym.symbols('x')
-        self.f_expr = self.x_sym ** 2
+    def __init__(self, f='x**2', max_iter=1e6, eps=1e-14):
+        self.f = f
         self.max_iter = max_iter
-        self.eps = 1.0e-12
-        
-        
+        self.eps = eps
+
+        # Define x as mathematical symbol
+        x = sym.symbols('x')
+        self.x = x
+
     def calculate_f_value(self, x):
-        f = sym.lambdify([self.x_sym], self.f_expr)
+        f = sym.lambdify([self.x], self.f)
         return f(x)
+ 
         
     def calculate_derivative(self, x):
         # Symbolic expression of the function - user input
         
-        dfdx_expr = sym.diff(self.f_expr, self.x_sym)
-        dfdx = sym.lambdify([self.x_sym], dfdx_expr)
+        self.dfdx_expr = sym.diff(self.f, self.x)
+        dfdx = sym.lambdify([self.x], self.dfdx_expr)
         
         return dfdx(x)
     
-    def plot_function(self):
-        x = np.linspace(-5,5,100)
-        y = sym.lambdify([self.x_sym], self.f_expr)(x)
+    def plot_function(self, a=-10, b=10):
+        x = np.linspace(a,b,100)
+        y = sym.lambdify([self.x], self.f)(x)
         
-        plt.plot(x)
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.spines['left'].set_position('center')
+        ax.spines['bottom'].set_position('zero')
+        ax.spines['right'].set_color('none')
+        ax.spines['top'].set_color('none')
+        ax.xaxis.set_ticks_position('bottom')
+        ax.yaxis.set_ticks_position('left')
+        plt.plot(x, y)
+        plt.show()
         
-#         fig = plt.figure()
-#         ax = fig.add_subplot(1, 1, 1)
-#         ax.spines['left'].set_position('center')
-#         ax.spines['bottom'].set_position('zero')
-#         ax.spines['right'].set_color('none')
-#         ax.spines['top'].set_color('none')
-#         ax.xaxis.set_ticks_position('bottom')
-#         ax.yaxis.set_ticks_position('left') 
-#         plt.plot(x)
-        
-    def calculate_roots(self, x):
+
+    def find_solution(self, x0):
         iter_counter = 0
-        f_value = self.calculate_f_value(x)
-        print("Instantiated f_value {}".format(f_value))
-        print("eps: {}".format(self.eps))
+        f_value = self.calculate_f_value(x0)
         while abs(f_value) > self.eps and iter_counter < self.max_iter:
             try:
-                x = x - float(f_value) / self.calculate_derivative(x)
+                x0 = x0 - float(f_value) / self.calculate_derivative(x0)
             except ZeroDivisionError:
-                print ("Error! - derivative zero for x = ")
-                sys.exit(1)     # Abort with error
-            f_value = self.calculate_f_value(x)
+                # Handling ZeroDivisonError - if the derivative of the initial guess is 0, increment x0 
+                print("Error! - derivative zero for x = {}. Incrementing by 1...".format(x0))
+                x0 += 1
+            f_value = self.calculate_f_value(x0)
             iter_counter += 1
             
-            print("X value: {}, f_value: {}, iteration #{}".format(x, f_value, iter_counter))
+            print("X = {}, f(x) = {}, iteration #{}".format(x0, f_value, iter_counter))
 
+        print("Solution found at {} with {} iterations".format(x0, iter_counter))
         if abs(f_value) > self.eps:
+            print("Solution not found! Try changing the initial guess")
             iter_counter = -1
-        return x, iter_counter
+            x0 = None
+
+        return x0
         
         
