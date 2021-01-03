@@ -12,7 +12,24 @@ class Newton():
                 f (str) representing the function
                 max_iter (int) representing the maximum number of iterations to find the solution
                 eps (float) representing stopping criteria abs(f(x)) < epsilon
+            
+            Examples
+            --------
+            >>> f = '2*x**2 - 50'
+            >>> newton = Newton(f)
+            >>> newton.find_solution(1)
+            x = 13.0, f(x) = 288.0, iteration #1
+            x = 7.461538461538462, f(x) = 61.349112426035504, iteration #2
+            x = 5.406026962727994, f(x) = 8.45025504348412, iteration #3
+            x = 5.015247601944898, f(x) = 0.3054170176281019, iteration #4
+            x = 5.000023178253949, f(x) = 0.00046356615344222973, iteration #5
+            x = 5.000000000053723, f(x) = 1.0744685141617083e-09, iteration #6
+            x = 5.0, f(x) = 0.0, iteration #7
+            
+            Solution found at 5.0 with 7 iterations
+
                 """
+
         self.f = f  # Symbolic expression of the function
         self.max_iter = max_iter
         self.eps = eps
