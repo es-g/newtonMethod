@@ -72,7 +72,7 @@ class Newton():
         plt.plot(x, y)
         plt.show()
 
-    def find_solution(self, xn):
+    def find_solution(self, x0):
         """ Function to approximate solution of f(x)=0 by Newton's method
 
             Args:
